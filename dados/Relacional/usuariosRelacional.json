@@ -4,23 +4,23 @@
         "nome":"Daniel",
         "email":"daniel@usp.br",
         "cpf":"123.456.789-10",
-        "perfil": "privado",
-        "carteira":-----
+        "privacidade_do_perfil": true,
+        "carteira":30
     },
     {
         "id":2,
         "nome":"Patrick",
         "email":"patrick@usp.br",
         "cpf":"456.789.123-10",
-        "perfil": "publico",
-        "carteira":----
+        "privacidade_do_perfil": false,
+        "carteira":37.5
     },
     {
         "id":3,
         "nome":"Francisco",
         "email":"francisco@usp.br",
         "cpf":"789.123.456-10",
-        "perfil": "publico",
-        "carteira":------
+        "privacidade_do_perfil": false,
+        "carteira":12.5
     }
 ]

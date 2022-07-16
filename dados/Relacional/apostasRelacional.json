@@ -1,6 +1,56 @@
 [
     {
         "id":1,
-        "tipo":
+        "tipo":"time_vencedor",
+        "lucro_ou_perda":"perda",
+        "valor": 10,
+        "usuario": 1,
+        "jogo":1,
+        "data": "2022-07-09T14:00:00+00:00"
     },
+    {
+        "id":2,
+        "tipo":"time_vencedor",
+        "lucro_ou_perda":"vitoria",
+        "valor": 20,
+        "usuario": 1,
+        "jogo": 2,
+        "data": "2022-07-11T14:00:00+00:00"
+    },
+    {
+        "id":3,
+        "tipo":"time_vencedor",
+        "lucro_ou_perda":"perda",
+        "valor": 10,
+        "usuario": 2,
+        "jogo": 2,
+        "data": "2022-07-11T11:00:00+00:00"
+    },
+    {
+        "id":4,
+        "tipo":"empate",
+        "lucro_ou_perda":"perda",
+        "valor": 10,
+        "usuario": 1,
+        "jogo":3,
+        "data": "2022-07-12T10:00:00+00:00"
+    },
+    {
+        "id":5,
+        "tipo":"time_vencedor",
+        "lucro_ou_perda":"lucro",
+        "valor": 30,
+        "usuario": 2,
+        "jogo":3,
+        "data": "2022-07-12T09:00:00+00:00"
+    },
+    {
+        "id":6,
+        "tipo":"time_vencedor",
+        "lucro_ou_perda":"lucro",
+        "valor": 10,
+        "usuario": 3,
+        "jogo":3,
+        "data": "2022-07-12T08:00:00+00:00"
+    }
 ]

@@ -5,7 +5,7 @@
         {
             "homeTeam":"Portuguesa",
             "awayTeam":"Milan",
-            "date":1657479600,
+            "date":"2022-07-10T19:00:00+00:00",
             "local":"Estadio do Caninde"
         }
     },
@@ -15,7 +15,7 @@
         {
             "homeTeam":"Liverpool",
             "awayTeam":"Corinthians",
-            "date":1657566000,
+            "date":"2022-07-11T19:00:00+00:00",
             "local":"Estadio Anfield"
         }
     },
@@ -25,7 +25,7 @@
         {
             "homeTeam":"Milan",
             "awayTeam":"Corinthians",
-            "date":1657645200,
+            "date":"2022-07-12T17:00:00+00:00",
             "local":"Estadio San Siro"
         }
     },
@@ -35,7 +35,7 @@
         {
             "homeTeam":"Liverpool",
             "awayTeam":"Portuguesa",
-            "date":1657965600,
+            "date":"2022-07-16T10:00:00+00:00",
             "local":"Estadio Anfield"
         }
     },
@@ -45,7 +45,7 @@
         {
             "homeTeam":"Corinthians",
             "awayTeam":"Portuguesa",
-            "date":1658091600,
+            "date":"2022-07-17T21:00:00+00:00",
             "local":"Neo Quimica Arena"
         }
     },
@@ -55,7 +55,7 @@
         {
             "homeTeam":"Milan",
             "awayTeam":"Liverpool",
-            "date":1658167200,
+            "date":"2022-07-18T18:00:00+00:00",
             "local":"Estadio Santiago Bernabeu"
         }
     }
