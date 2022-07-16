@@ -7,7 +7,7 @@ const getConnection = async () => {
   const client = redis.createClient({
     socket: {
       host: HOST,
-      port: PORT 
+      port: PORT
     }
   })
 

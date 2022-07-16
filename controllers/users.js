@@ -5,7 +5,7 @@ const User = require("../models/user")
 exports.authUser = async (req, res) => {
   const { email, password } = req.body 
 
-  let user 
+  let user;
 
   try {
     user = await User.get({ email, password })

@@ -5,11 +5,11 @@ const { slugToCamelCase } = require("../util/formatting")
 
 module.exports = class User {
   constructor(name, email, password, personalIdentifier, profilePrivacy) {
-    this.name = name 
-    this.email = email 
-    this.password = password 
-    this.personalIdentifier = personalIdentifier 
-    this.profilePrivacy = profilePrivacy
+    this.name = name;
+    this.email = email;
+    this.password = password;
+    this.personalIdentifier = personalIdentifier;
+    this.profilePrivacy = profilePrivacy;
   }
 
   static async get ({ email, password }) {
@@ -22,7 +22,7 @@ module.exports = class User {
     }
 
     return parsedUser
-  } 
+  }
 
   async save () {
     try {

@@ -1,11 +1,5 @@
-module.exports = class Bet {
-  constructor() {}
-
-  static get () {}
-
-  save() {}
-
-  update() {}
-
-  delete() {}
+module.exports = class Team {
+  constructor(nome) {
+    this.nome = nome;
+  }
 }

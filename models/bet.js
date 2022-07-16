@@ -1,14 +1,13 @@
-const { getSession } = require("../databases/neo4j")
-
 module.exports = class Bet {
-  constructor() {}
-
-  static get (id) {
+  constructor(id, email, nome, cpf, privacidadeDoPerfil) {
+    this.id = id;
+    this.email = email;
+    this.nome = nome;
+    this.cpf = cpf;
+    this.privacidadeDoPerfil = privacidadeDoPerfil;
   }
 
-  save () {}
-
-  update() {}
-
-  delete() {}
+  save() {
+    
+  }
 }

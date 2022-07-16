@@ -1,11 +1,7 @@
-module.exports = class Bet {
-  constructor() {}
-
-  static get () {}
-
-  save() {}
-
-  update() {}
-
-  delete() {}
+module.exports = class Player {
+  constructor(id, nome, dataDeNascimento) {
+    this.id = id;
+    this.nome = nome;
+    this.dataDeNascimento = dataDeNascimento;
+  }
 }
