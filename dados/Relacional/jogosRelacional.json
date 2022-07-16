@@ -1,0 +1,62 @@
+[
+    {
+        "id":1,
+        "info":
+        {
+            "homeTeam":"Portuguesa",
+            "awayTeam":"Milan",
+            "date":1657479600,
+            "local":"Estadio do Caninde"
+        }
+    },
+    {
+        "id":2,
+        "info":
+        {
+            "homeTeam":"Liverpool",
+            "awayTeam":"Corinthians",
+            "date":1657566000,
+            "local":"Estadio Anfield"
+        }
+    },
+    {
+        "id":3,
+        "info":
+        {
+            "homeTeam":"Milan",
+            "awayTeam":"Corinthians",
+            "date":1657645200,
+            "local":"Estadio San Siro"
+        }
+    },
+    {
+        "id":4,
+        "info":
+        {
+            "homeTeam":"Liverpool",
+            "awayTeam":"Portuguesa",
+            "date":1657965600,
+            "local":"Estadio Anfield"
+        }
+    },
+    {
+        "id":5,
+        "info":
+        {
+            "homeTeam":"Corinthians",
+            "awayTeam":"Portuguesa",
+            "date":1658091600,
+            "local":"Neo Quimica Arena"
+        }
+    },
+    {
+        "id":6,
+        "info":
+        {
+            "homeTeam":"Milan",
+            "awayTeam":"Liverpool",
+            "date":1658167200,
+            "local":"Estadio Santiago Bernabeu"
+        }
+    }
+]

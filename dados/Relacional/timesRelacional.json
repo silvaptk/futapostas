@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "nome":"Liverpool"
+    },
+    {
+        "id": 2,
+        "nome": "Corinthians"
+    },
+    {
+        "id": 3,
+        "time": "Portuguesa"
+    },
+    {
+        "id": 4,
+        "time": "Milan"
+    }
+]
+
+

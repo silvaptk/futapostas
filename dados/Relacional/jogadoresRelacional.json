@@ -1,0 +1,190 @@
+[
+    {    
+        "id":1,
+        "info":
+        {
+            "nome": "Roberto Firmino",
+            "datanascimento": "2/10/1991",
+            "time": "Liverpool",
+            "idTime": 1
+        }
+    },
+    {    
+        "id":2,
+        "info":
+        {
+            "nome": "Mohamed Salah",
+            "datanascimento": "15/06/1992",
+            "time": "Liverpool",
+            "idTime": 1            
+        }
+    },
+    {    
+        "id":3,
+        "info":
+        {
+            "nome": "Darwin Nunes",
+            "datanascimento": "24/06/1999",
+            "time": "Liverpool",
+            "idTime": 1
+        }
+    },
+    {    
+        "id":4,
+        "info":
+        {
+            "nome": "Alisson Becker",
+            "datanascimento": "2/10/1992",
+            "time": "Liverpool",
+            "idTime": 1
+        }
+    },
+    {    
+        "id":5,
+        "info":
+        {
+            "nome": "Alexander Arnold",
+            "datanascimento": "7/10/1998",
+            "time": "Liverpool",
+            "idTime": 1
+        }
+    },
+    {    
+        "id":6,
+        "info":{
+            "nome": "Cassio",
+            "datanascimento": "3/12/1990",
+            "time": "Corinthians",
+            "idTime": 2
+        }
+    },
+    {    
+        "id":7,
+        "info":{
+            "nome": "Gil",
+            "datanascimento": "5/9/1989",
+            "time": "Corinthians",
+            "idTime": 2
+        }
+    },
+    {    
+        "id":8,
+        "info":{
+            "nome": "Renato Augusto",
+            "datanascimento": "23/5/1990",
+            "time": "Corinthians",
+            "idTime": 2
+        }
+    },
+    {    
+        "id":9,
+        "info":{
+            "nome": "Paulinho",
+            "datanascimento": "2/8/1994",
+            "time": "Corinthians",
+            "idTime": 2
+        }
+    },
+    {    
+        "id":10,
+        "info":
+        {
+            "nome": "William",
+            "datanascimento": "5/1/1993",
+            "time": "Corinthians",
+            "idTime": 2
+        }
+    },
+    {    
+        "id":11,
+        "info":{
+            "nome": "Messi",
+            "datanascimento": "10/10/1990",
+            "time": "Portuguesa",
+            "idTime": 3
+        }
+    },
+    {    
+        "id":12,
+        "info":{
+            "nome": "Cristiano Ronaldo",
+            "datanascimento": "07/07/1990",
+            "time": "Portuguesa",
+            "idTime": 3
+        }
+    },
+    {    
+        "id":13,
+        "info":{
+            "nome": "Neymar",
+            "datanascimento": "3/3/1993",
+            "time": "Portuguesa",
+            "idTime": 3
+        }
+    },
+    {    
+        "id":14,
+        "info":{
+            "nome": "Zico",
+            "datanascimento": "17/5/1987",
+            "time": "Portuguesa",
+            "idTime": 3
+        }
+    },
+    {    
+        "id":15,
+        "info":
+        {
+            "nome": "Pele",
+            "datanascimento": "13/11/1979",
+            "time": "Portuguesa",
+            "idTime": 3
+        }
+    },
+    {    
+        "id":16,
+        "info":{
+            "nome": "Andrea Pirlo",
+            "datanascimento": "1/4/1995",
+            "time": "Milan",
+            "idTime": 4
+        }
+    },
+    {    
+        "id":17,
+        "info":{
+            "nome": "Paolo Maldini",
+            "datanascimento": "1/3/2000",
+            "time": "Milan",
+            "idTime": 4
+        }
+    },
+    {    
+        "id":18,
+        "info":{
+            "nome": "Zinedine Zidane",
+            "datanascimento": "7/8/2001",
+            "time": "Milan",
+            "idTime": 4
+        }
+    },
+    {    
+        "id":19,
+        "info":{
+            "nome": "Xavi",
+            "datanascimento": "9/9/1990",
+            "time": "Milan",
+            "idTime": 4
+        }
+    },
+    {    
+        "id":20,
+        "info":
+        {
+            "nome": "Iniesta",
+            "datanascimento": "13/2/1994",
+            "time": "Milan",
+            "idTime": 4
+        }
+    }
+]

@@ -1,0 +1,26 @@
+[
+    {
+        "id":1,
+        "nome":"Daniel",
+        "email":"daniel@usp.br",
+        "cpf":"123.456.789-10",
+        "perfil": "privado",
+        "carteira":-----
+    },
+    {
+        "id":2,
+        "nome":"Patrick",
+        "email":"patrick@usp.br",
+        "cpf":"456.789.123-10",
+        "perfil": "publico",
+        "carteira":----
+    },
+    {
+        "id":3,
+        "nome":"Francisco",
+        "email":"francisco@usp.br",
+        "cpf":"789.123.456-10",
+        "perfil": "publico",
+        "carteira":------
+    }
+]
