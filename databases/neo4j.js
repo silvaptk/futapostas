@@ -16,7 +16,7 @@ const closeSession = (session) => {
 
 }
 
-const run = (query) => {
+const run = async (query) => {
   const session = getSession()
 
   await session.run(query)
@@ -24,7 +24,7 @@ const run = (query) => {
   closeSession(session)
 }
 
-const runWithCallback = (callback) => {
+const runWithCallback = async (callback) => {
   const session = getSession()
 
   await callback(session.run)

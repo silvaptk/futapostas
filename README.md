@@ -12,6 +12,16 @@ API REST criada para gerenciar sistema de apostas. As entidades do sistema são
 
 A API deve permitir, principalmente, que o usuário realize apostas sobre o jogo e ganhe por isso. Ele também deve ser capaz de visualizar as apostas, bem como visualizar os jogos, os times, os jogadores e etc.
 
+## Executando
+
+Basta seguir o passo a passo a seguir:
+
+1. Executar `npm install` para instalar as dependências do projeto (É preciso ter o **Node.js** instalado)
+2. Executar `docker compose up` para executar os contêineres Docker contendo os bancos de dados 
+3. Executar `npm start` para iniciar o servidor na porta 9876 
+
+Feito isso, o servidor já irá aceitar requisições.
+
 ## Estrutura de pastas
 
 ### **`app.js`**
