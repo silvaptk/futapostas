@@ -1,19 +1,18 @@
+const redis = require("redis")
+
 const getConnection = async () => {
-  const USER = process.env.REDIS_USER
-  const PASSWORD = process.env.REDIS_PASSWORD
   const HOST = process.env.REDIS_HOST
   const PORT = process.env.REDIS_PORT
 
-  const client = redis.createClient(
-    USER &&
-      PASSWORD &&
-      HOST &&
-      PORT && {
-        url: `redis://${USER}:${PASSWORD}@${HOST}:${PORT}`,
-      }
-  )
+  const client = redis.createClient({
+    socket: {
+      host: HOST,
+      port: PORT 
+    }
+  })
 
   client.on("error", (error) => {
+    console.log(error)
     throw new Error(error)
   })
 
@@ -22,10 +21,20 @@ const getConnection = async () => {
   return client
 }
 
-const run = async (query) => {
+const get = async (key) => {
   const connection = await getConnection()
 
-  const result = await connection[query.type](query.key, query.value)
+  const result = await connection.get(key)
+
+  closeConnection(connection)
+
+  return result 
+}
+
+const set = async (key, value) => {
+  const connection = await getConnection()
+
+  const result = await connection.set(key, value)
 
   closeConnection(connection)
 
@@ -44,4 +53,4 @@ const closeConnection = (client) => {
   client.quit()
 }
 
-module.exports = { getConnection, run, runWithCallback, closeConnection }
+module.exports = { getConnection, get, set, closeConnection }
