@@ -1,16 +1,5 @@
-const pg = require("pg")
+const pgp = require("pg-promise")()
 
-const pool = new pg.Pool({
-  user: process.env.PG_USER,
-  host: process.env.PG_HOST,
-  database: process.env.PG_DATABASE,
-  password: process.env.PG_PASSWORD,
-  port: process.env.PG_PORT,
-})
+const db = pgp('postgres://postgres:admin@localhost:5432/ep4');
 
-
-const query = (text, params) => {
-  return pool.query(text, params)
-}
-
-module.exports = { query }
+module.exports = { db }
