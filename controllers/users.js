@@ -28,7 +28,6 @@ exports.authUser = async (req, res) => {
 
 exports.createUser = async (req, res) => {
   const { name, email, password, personal_identifier, profile_privacy } = req.body 
-
   const newUser = new User(
     name,
     email, 
@@ -41,9 +40,10 @@ exports.createUser = async (req, res) => {
 
   if (result) {
     return res.status(200).json({
-      message: "Usuário criado com sucesso"
+      message: "Usuário criado com sucesso",
+      payload: newUser
     })
-  } 
+  }
 
   return res.status(400).json({
     error: {

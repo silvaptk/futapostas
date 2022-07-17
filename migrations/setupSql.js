@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { db }= require('../databases/postgres');
+const { query }= require('../databases/postgres');
 const { QueryFile } = require('pg-promise');
 
 const {join: joinPath} = require('path');
@@ -11,9 +11,9 @@ function sql(file) {
 }
 
 async function runMigration() {
-  const creationScript = sql('setup.sql')
+  const creationScript = sql('setup.sql');
   try {
-    await db.any(creationScript);
+    await query(creationScript);
   } catch(e) {
     console.error(e)
   }
