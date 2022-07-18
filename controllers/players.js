@@ -1,7 +1,7 @@
 exports.getPlayers = (req, res, next) => {
-    const allPalyers = await Player.get()
+    const allPlayers = await Player.get()
 
-    res.status(200).json(allPalyers)
+    res.status(200).json(allPlayers)
 }
 
 exports.getPlayer = (req, res, next) => {}
