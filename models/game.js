@@ -1,18 +1,56 @@
-const { query: postgresQuery } = require("../databases/postgres")
-const { run: runOnNeo4j } = require("../databases/neo4j")
-const { getConnection: getMongoConnection } = require("../databases/mongo")
+const postgres = require("../databases/postgres")
+const neo4j = require("../databases/neo4j")
+const mongo = require("../databases/mongo")
 
 module.exports = class Game {
-  constructor(local, dataHorario, timeA, timeB) {
+  constructor (local, dataHorario, timeA, timeB) {
     this.local = local;
     this.dataHorario = dataHorario;
     this.timeA = timeA;
     this.timeB = timeB;
   }
 
+  static async get (id) {
+    if (id) {
+      return {}
+    }
+
+    let games 
+
+    try {
+      games = await postgres.query(`
+        SELECT 
+          j.id AS "gameId", j.local AS "gamePlace", j.data_horario AS "gameDate",
+          tA.id AS "homeTeamId", tA.nome AS "homeTeamName",
+          tB.id AS "awayTeamId", tB.nome AS "awayTeamName"
+        FROM jogo j 
+          JOIN "time" tA ON j.timea = tA.id 
+          JOIN "time" tB ON j.timeb = tB.id
+      `)
+
+      console.log(result)
+    } catch (error) {
+      console.log(error)
+    }
+
+    return games.map(game => ({
+      id: game.gameId,
+      place: game.gamePlace,
+      date: game.gameDate,
+      home_team: {
+        id: game.homeTeamId, 
+        name: game.homeTeamName,
+      },
+      away_team: {
+        id: game.awayTeamId, 
+        name: game.awayTeamName,
+      }
+    }))  
+  }
+
   async save () {
     try {
-      const query = `
+      await postgres.query(`
         INSERT INTO jogo(timea, timeb, data_horario, local, numero_de_resenhas)
         VALUES (
           ${this.timeA},
@@ -21,9 +59,7 @@ module.exports = class Game {
           '${this.local}',
           0
         )
-      `
-      
-      await postgresQuery(query)
+      `)
     } catch (error) {
       console.log(error)
 
@@ -31,7 +67,7 @@ module.exports = class Game {
     }
 
     try {
-      const result = await postgresQuery(`
+      const result = await postgres.query(`
         SELECT 
           id 
         FROM 
@@ -48,7 +84,7 @@ module.exports = class Game {
     }
     
     try {
-      await runOnNeo4j(`
+      await neo4j.run(`
         CREATE (:Jogo { Id: ${this.id}, Data: "${this.dataHorario}" })
       `)
     } catch (error) {
@@ -58,13 +94,15 @@ module.exports = class Game {
     }
 
     try {
-      const mongo = await getMongoConnection()
+      const mongoConnection = await mongo.getConnection()
 
-      mongo.collection("Jogo").insertOne({
+      mongoConnection.collection("Jogo").insertOne({
         "códigoJogo": this.id 
       })
     } catch (error) {
       console.log(error)
+
+      return false
     }
 
     return true

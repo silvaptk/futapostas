@@ -1,6 +1,10 @@
 const Game = require("../models/game")
 
-exports.getGames = (req, res) => {}
+exports.getGames = async (req, res) => {
+  const allGames = await Game.get()
+
+  res.status(200).json(allGames)
+}
 
 exports.getGame = (req, res) => {}
 
