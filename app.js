@@ -9,6 +9,7 @@ const gamesRoutes = require("./routes/games")
 const playersRoutes = require("./routes/players")
 const teamsRoutes = require("./routes/teams")
 const usersRoutes = require("./routes/users")
+const depositRoutes = require("./routes/deposit")
 
 const { authenticationMiddleware } = require("./middlewares/auth")
 
@@ -29,5 +30,6 @@ app.use("/players", authenticationMiddleware)
 app.use("/teams", teamsRoutes)
 
 app.use("/users", usersRoutes)
+app.use("/deposit", depositRoutes)
 
 app.listen(9876)

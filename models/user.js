@@ -15,7 +15,6 @@ module.exports = class User {
 
   static async get ({ email, password }) {
     const userPassword = await getFromRedis(email)
-
     if (userPassword !== password) {
       return false 
     }
@@ -25,9 +24,7 @@ module.exports = class User {
     try {
       const result = await postgresQuery(`SELECT * FROM usuario WHERE email = '${email}'`)
 
-      if (result) {
-        user = result[0]
-      }
+      user = result[0]
     } catch (error) {
       console.log(error)
     }
