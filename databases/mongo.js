@@ -1,17 +1,19 @@
 const { MongoClient } = require("mongodb")
 
-const getConnection = (dbName = "futapostas") => {
-  const url = process.env.MONGO_URL || "mongodb://db:27017/";
-  const client = new MongoClient(url);
+const getConnection = async (databaseName = "futapostas") => {
+  const url = `mongodb://localhost:27017/${databaseName}`
+
+  let database   
 
   try {
-    await client.connect();
-    console.log("Database connected");
-    const db = client.db(dbName)
-    return db;
-  } catch (e) {
-    console.log(e.message);
+    const client = await MongoClient.connect(url)
+
+    database = client.db(databaseName)
+  } catch (error) {
+    console.log(error)
   }
-};
+
+  return database  
+}
 
 module.exports = { getConnection }

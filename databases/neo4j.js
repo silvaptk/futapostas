@@ -1,17 +1,13 @@
 const neo4j = require('neo4j-driver')
 
 const getSession = () => {
-  const NEO4J_URL = process.env.NEO4J_URL
-  const USER = process.env.NEO4J_USER
-  const PASSWORD = process.env.NEO4J_PASSWORD
-
-  const driver = neo4j.driver(NEO4J_URL)
+  const driver = neo4j.driver("neo4j://localhost")
 
   return driver.session()
 }
 
 const closeSession = (session) => {
-
+  session.close()
 }
 
 const run = async (query) => {

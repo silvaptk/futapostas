@@ -5,6 +5,7 @@
         "email":"caze@usp.br",
         "cpf":"123.456.789-10",
         "privacidade_do_perfil": true,
-        "carteira":30
+        "carteira":30,
+        "senha": "caze"
     }
 ]
