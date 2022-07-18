@@ -1,13 +1,11 @@
+const neo4j = require('neo4j-driver')
+
 const getSession = () => {
-  const URI = process.env.NEO4J_URI
+  const NEO4J_URL = process.env.NEO4J_URL
   const USER = process.env.NEO4J_USER
   const PASSWORD = process.env.NEO4J_PASSWORD
 
-  if (!USER || !PASSWORD) {
-    throw new Error("Sem credenciais para estabelecer conexão com Neo4J")
-  }
-
-  const driver = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD))
+  const driver = neo4j.driver(NEO4J_URL)
 
   return driver.session()
 }

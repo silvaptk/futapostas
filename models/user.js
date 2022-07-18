@@ -29,37 +29,39 @@ module.exports = class User {
       await postgresQuery(
         `
           INSERT INTO 
-            usuario (id, nome, email, senha, cpf, privacidade_do_perfil, carteira) 
+            usuario (id, nome, email, cpf, privacidade_do_perfil, carteira)
           VALUES 
-            ((SELECT MAX(id) FROM usuario) + 1, $1, $2, $3, $4, $5, 0.0)
-        `,
-        [this.name, this.email, this.password, this.identifier, this.profilePrivacy]
+            ((SELECT MAX(id) FROM usuario) + 1, \'${this.name}\', \'${this.email}\', 
+              \'${this.personalIdentifier}\', \'${this.profilePrivacy}\', 0.0)
+        `
       )
     } catch (error) {
-      return false 
+      console.log(error);
+      return false
     }
     
     try {
-      await postgresQuery(`SELECT MAX(id) FROM usuario`)
+      const result = await postgresQuery(`SELECT MAX(id) FROM usuario`)
+      this.id = result[0].max;
     } catch (error) {
-      return false 
+      console.log(error);
+      return false;
     }
 
-    this.id = result.rows[0].max
-    
+
     try {
-      await setOnRedis(email, JSON.stringify(this))
+      await setOnRedis(this.email, JSON.stringify(this.password))
     } catch (error) {
-      return false 
+      console.log(error);
+      return false;
     }
 
     try {
       await runOnNeo4j(
-        `CREATE (:Usuaŕio { email: "${this.email}" })`
+        `CREATE (:Usuário { email: "${this.email}" })`
       )
     } catch (error) {
       console.log(error)
-
       return false 
     }
 
