@@ -12,7 +12,54 @@ module.exports = class Game {
 
   static async get (id) {
     if (id) {
-      return {}
+      let gameSql 
+
+      try {
+        gameSql = await postgres.query(`
+          SELECT 
+            j.id AS "gameId", j.local AS "gamePlace", j.data_horario AS "gameDate",
+            tA.id AS "homeTeamId", tA.nome AS "homeTeamName",
+            tB.id AS "awayTeamId", tB.nome AS "awayTeamName"
+          FROM jogo j 
+            JOIN "time" tA ON j.timea = tA.id 
+            JOIN "time" tB ON j.timeb = tB.id
+          WHERE 
+            j.id = $${id}
+        `)
+        console.log(result)
+      } catch (error) {
+        console.log(error)
+      }
+      
+      let gameMongo
+
+      try {
+        gameMongo = await mongoConnection.collection("Jogo").find({
+          "códigoJogo": id
+        })
+      } catch(error) {
+        console.log(error)
+      }
+
+      return {
+        id: gameSql.gameId,
+        place: gameSql.gamePlace,
+        date: gameSql.gameDate,
+        home_team: {
+          id: gameSql.homeTeamId, 
+          name: gameSql.homeTeamName,
+          // Depende de como vai ser adicionado o campo titulares no mongo
+          titulares: gameMongo.gameTitulares
+        },
+        away_team: {
+          id: gameSql.awayTeamId, 
+          name: gameSql.awayTeamName,
+          // Depende de como vai ser adicionado o campo titulares no mongo
+          titulares: gameMongo.gameTitulares
+        },
+          // Depende de como vai ser adicionado o campo eventos no mongo
+        eventos: gameMongo.gameEvents
+      }
     }
 
     let games 

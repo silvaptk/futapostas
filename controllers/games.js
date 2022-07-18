@@ -6,7 +6,13 @@ exports.getGames = async (req, res) => {
   res.status(200).json(allGames)
 }
 
-exports.getGame = (req, res) => {}
+exports.getGame = (req, res) => {
+  const { game_id } = req.body
+
+  const game = await Game.get(game_id)
+
+  res.status(200).json(game)
+}
 
 exports.createGame = async (req, res) => {
   const { team_a, team_b, date, place } = req.body
