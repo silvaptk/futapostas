@@ -3,24 +3,27 @@ const { run: runOnNeo4j } = require("../databases/neo4j")
 const { getConnection: getMongoConnection } = require("../databases/mongo")
 
 module.exports = class Game {
-  constructor(id, local, dataHorario, timeA, timeB) {
+  constructor(local, dataHorario, timeA, timeB) {
     this.local = local;
     this.dataHorario = dataHorario;
     this.timeA = timeA;
     this.timeB = timeB;
   }
 
-  save () {
+  async save () {
     try {
-      await postgresQuery(`
-        INSERT INTO jogo(timea, timeb, data_horario, local)
+      const query = `
+        INSERT INTO jogo(timea, timeb, data_horario, local, numero_de_resenhas)
         VALUES (
           ${this.timeA},
           ${this.timeB},
-          ${this.dataHorario},
-          ${this.local}
+          '${this.dataHorario}',
+          '${this.local}',
+          0
         )
-      `);
+      `
+      
+      await postgresQuery(query)
     } catch (error) {
       console.log(error)
 
@@ -34,10 +37,10 @@ module.exports = class Game {
         FROM 
           jogo 
         WHERE 
-          data_horario = ${this.dataHorario} AND local = ${this.local}
+          data_horario = '${this.dataHorario}' AND local = '${this.local}'
       `)
 
-      this.id = result[0]
+      this.id = result[0].id
     } catch (error) {
       console.log(error)
 
@@ -46,7 +49,7 @@ module.exports = class Game {
     
     try {
       await runOnNeo4j(`
-        CREATE (:Jogo { Id: ${this.id}, Data: ${this.dataHorario}  })
+        CREATE (:Jogo { Id: ${this.id}, Data: "${this.dataHorario}" })
       `)
     } catch (error) {
       console.log(error)
@@ -55,7 +58,7 @@ module.exports = class Game {
     }
 
     try {
-      const mongo = getMongoConnection()
+      const mongo = await getMongoConnection()
 
       mongo.collection("Jogo").insertOne({
         "códigoJogo": this.id 

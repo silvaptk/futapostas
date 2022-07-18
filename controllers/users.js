@@ -14,7 +14,7 @@ exports.authUser = async (req, res) => {
   }
 
   if (!user) {
-    return res.status(401).json({
+    return res.status(400).json({
       error: {
         message: "E-mail ou senha incorretos"
       }

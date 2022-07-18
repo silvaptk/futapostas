@@ -1,9 +1,17 @@
 const pgp = require("pg-promise")()
 
-const getConnection = (database = "futapostas") => {
-  const databaseConnection = pgp(`postgres://postgres:admin@localhost:5432/${database}`)
+global.postgresConnections = {}
 
-  return databaseConnection
+const getConnection = (database = "futapostas") => {
+  if (global.postgresConnections[database]) {
+    return global.postgresConnections[database]
+  }
+
+  global.postgresConnections[database] = pgp(
+    `postgres://postgres:admin@localhost:5432/${database}`
+  )
+
+  return global.postgresConnections[database]
 }
 
 const query = (query, database) => {
