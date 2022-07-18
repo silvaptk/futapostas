@@ -4,24 +4,35 @@ const { run: runOnNeo4j } = require("../databases/neo4j")
 const { slugToCamelCase } = require("../util/formatting")
 
 module.exports = class User {
-  constructor(name, email, password, personalIdentifier, profilePrivacy) {
+  constructor(name, email, password, personalIdentifier, profilePrivacy, wallet) {
     this.name = name;
     this.email = email;
     this.password = password;
     this.personalIdentifier = personalIdentifier;
     this.profilePrivacy = profilePrivacy;
+    this.wallet = wallet;
   }
 
   static async get ({ email, password }) {
-    const result = await getFromRedis(email)
+    const userPassword = await getFromRedis(email)
 
-    const parsedUser = JSON.parse(result)
-
-    if (parsedUser.senha !== password) {
+    if (userPassword !== password) {
       return false 
     }
 
-    return parsedUser
+    let user 
+
+    try {
+      const result = await postgresQuery(`SELECT * FROM usuario WHERE email = '${email}'`)
+
+      if (result) {
+        user = result[0]
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
+    return user
   }
 
   async save () {
@@ -29,10 +40,15 @@ module.exports = class User {
       await postgresQuery(
         `
           INSERT INTO 
-            usuario (id, nome, email, cpf, privacidade_do_perfil, carteira)
+            usuario (nome, email, cpf, privacidade_do_perfil, carteira)
           VALUES 
-            ((SELECT MAX(id) FROM usuario) + 1, \'${this.name}\', \'${this.email}\', 
-              \'${this.personalIdentifier}\', \'${this.profilePrivacy}\', 0.0)
+            (
+              '${this.name}', 
+              '${this.email}', 
+              '${this.personalIdentifier}', 
+              '${this.profilePrivacy}', 
+              0.0
+            )
         `
       )
     } catch (error) {
@@ -50,7 +66,7 @@ module.exports = class User {
 
 
     try {
-      await setOnRedis(this.email, JSON.stringify(this.password))
+      await setOnRedis(this.email, this.password)
     } catch (error) {
       console.log(error);
       return false;

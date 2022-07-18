@@ -17,6 +17,7 @@ exports.authenticationMiddleware = async (req, res, next) => {
         userData.senha,
         userData.cpf,
         userData.privacidade_do_perfil,
+        userData.carteira
       )
 
       user.id = userData.id

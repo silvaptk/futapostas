@@ -75,3 +75,14 @@ exports.updateUser = async (req, res) => {
     message: "Verifique os seus dados e tente novamente"
   })
 }
+
+exports.getUser = async (req, res) => {
+  res.status(200).send({
+    id: req.user.id,
+    name: req.user.name,
+    email: req.user.email,
+    profile_privacy: req.user.profilePrivacy,
+    personal_identifier: req.user.personalIdentifier,
+    wallet: req.user.wallet, 
+  })
+}

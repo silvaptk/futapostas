@@ -1,5 +1,16 @@
 const pgp = require("pg-promise")()
 
-const db = pgp('postgres://postgres:admin@localhost:5432/ep4');
+const getConnection = (database = "futapostas") => {
+  const databaseConnection = pgp(`postgres://postgres:admin@localhost:5432/${database}`)
 
-module.exports = { query: db.any }
+  return databaseConnection
+}
+
+const query = (query, database) => {
+  const connection = getConnection(database)
+
+  return connection.any(query)
+}
+
+
+module.exports = { query }

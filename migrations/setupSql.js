@@ -1,22 +1,27 @@
-const fs = require('fs')
-const { query }= require('../databases/postgres');
-const { QueryFile } = require('pg-promise');
+const { query } = require("../databases/postgres")
+const { QueryFile } = require("pg-promise")
 
-const {join: joinPath} = require('path');
+const {join: joinPath} = require("path")
 
-// Helper for linking to external query files:
-function sql(file) {
-    const fullPath = joinPath(__dirname, file); // generating full path;
-    return new QueryFile(fullPath, {minify: true});
+function sql (file) {
+    const fullPath = joinPath(__dirname, file) 
+    return new QueryFile(fullPath, { minify: true })
 }
 
-async function runMigration() {
-  const creationScript = sql('setup.sql');
+async function runMigration () {
   try {
-    await query(creationScript);
+    await query("CREATE DATABASE futapostas", "postgres")
+  } catch (error) {
+    console.log(error)
+  } 
+
+  const creationScript = sql("setup.sql")
+
+  try {
+    await query(creationScript)
   } catch(e) {
     console.error(e)
   }
 }
 
-runMigration();
+runMigration()
