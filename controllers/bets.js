@@ -5,9 +5,11 @@ exports.getBets = (req, res, next) => {}
 exports.getBet = (req, res, next) => {}
 
 exports.createBet = async (req, res) => {
-    const { email, tipoAposta, resultado, valor, jogo_id } = req.body 
+    const { tipoAposta, resultado, valor, jogo_id } = req.body 
+    const { email } = req.user;
+
     const newBet = new Bet(
-        email, 
+        email,
         tipoAposta,
         resultado,
         valor,
