@@ -143,4 +143,12 @@ module.exports = class User {
     
     return result 
   }
+
+  static async updateWalletByEmail(email, newValue) {
+    const usuario = await postgresQuery(`SELECT * FROM Usuario u WHERE u.email=\'${email}\'`);
+    postgresQuery(`UPDATE Usuario SET carteira = ${usuario[0].carteira + newValue} WHERE email = \'${email}\'`);
+  }
+  static async getWalletByEmail(email) {
+    return (await postgresQuery(`SELECT * FROM Usuario u WHERE u.email=\'${email}\'`))[0].carteira;
+  }
 }

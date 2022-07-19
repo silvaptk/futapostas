@@ -13,9 +13,11 @@ const closeSession = (session) => {
 const run = async (query) => {
   const session = getSession()
 
-  await session.run(query)
+  const result = await session.run(query);
 
   closeSession(session)
+
+  return result;
 }
 
 const runWithCallback = async (callback) => {

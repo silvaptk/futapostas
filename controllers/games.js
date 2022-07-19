@@ -36,3 +36,22 @@ exports.createGame = async (req, res) => {
 exports.updateGame = (req, res) => {}
 
 exports.deleteGame = (req, res) => {}
+
+exports.finishGame = async (req, res) => {
+  const { homeTeam, awayTeam } = req.body;
+  const { id } = req.params;
+
+  try {
+    const result = await Game.finishGame(id, homeTeam, awayTeam);
+    res.status(200).json({
+      message: 'Resultado do jogo gravado com sucesso',
+      payload: result,
+    });
+  } catch(e) {
+    console.error(e);
+    res.status(500).json({
+      message: 'Erro finalizando jogo',
+      error: e
+    })
+  }
+}

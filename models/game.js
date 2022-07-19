@@ -1,6 +1,8 @@
 const postgres = require("../databases/postgres")
 const neo4j = require("../databases/neo4j")
-const mongo = require("../databases/mongo")
+const mongo = require("../databases/mongo");
+const betTypes = require("./betTypes");
+const User = require("./user");
 
 module.exports = class Game {
   constructor (local, dataHorario, timeA, timeB) {
@@ -106,5 +108,84 @@ module.exports = class Game {
     }
 
     return true
+  }
+
+  static async finishGame(id, homeTeam, awayTeam) {
+    await this.addResults(id, homeTeam, awayTeam);
+    await this.calculatePrizes(id);
+  }
+
+  static async addResults(id, homeTeam, awayTeam) {
+    const mongoConnection = await mongo.getConnection();
+    await mongoConnection.collection("Jogo").updateOne({
+      'códigoJogo': Number(id)
+    },
+    {
+      $set: {
+        "homeTeam": Number(homeTeam),
+        "awayTeam": Number(awayTeam)
+      }
+    });
+    return await mongoConnection.collection("Jogo").find({'códigoJogo': Number(id)}).toArray()[0];
+  }
+
+  static async getWinningTeam(id) {
+    const collection = (await mongo.getConnection()).collection('Jogo');
+    const gameResult = await collection.findOne({'códigoJogo': Number(id)});
+    const jogoTeams = await postgres.query(`
+    SELECT a.nome as homeTeam, b.nome as awayTeam FROM Jogo j
+    INNER JOIN Time a ON a.id = j.timeA
+    INNER JOIN Time b ON b.id = j.timeB
+    WHERE j.id = ${id}
+    `);
+    if (gameResult.homeTeam > gameResult.awayTeam) {
+      return jogoTeams[0].hometeam;
+    } else if (gameResult.homeTeam < gameResult.awayTeam) {
+      return jogoTeams[0].awayteam;
+    } else {
+      return 'EMPATE';
+    }
+  }
+
+  static async calculatePrizes(id) {
+    const promises = betTypes.map(async type => {
+      const allBets = (await neo4j.run(`
+        MATCH (a:Usuário)-[r:${type}]->(b:Jogo)
+        WHERE b.Id = ${id}
+        RETURN r.Resultado, r.Valor, a.email
+      `)).records.map(bet => ({
+        resultado: bet._fields[0],
+        valor: bet._fields[1].low,
+        email: bet._fields[2],
+      }));
+      const winningTeam = await this.getWinningTeam(id);
+      
+      const montantePerdedor = allBets.reduce(
+          (acc, bet) => 
+            bet.resultado !== winningTeam ? 
+            acc + bet.valor : acc,
+          0
+        )
+        
+      const montanteVencedor = allBets.reduce(
+          (acc, bet) => 
+            bet.resultado === winningTeam ?
+            acc + bet.valor : acc,
+          0
+        )
+      const allPrizes = allBets.map(bet => {
+        if (bet.resultado === winningTeam) {
+          let montante;
+          if (montanteVencedor > 0) {
+            montante = bet.valor * (1 + montantePerdedor/montanteVencedor);
+          } else {
+            montante = bet.valor;
+          }
+          return User.updateWalletByEmail(bet.email, montante);
+        }
+      })
+      await Promise.all(allPrizes)
+    });
+    await Promise.all(promises);
   }
 }

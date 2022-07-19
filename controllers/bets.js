@@ -1,14 +1,16 @@
+const Bet = require('../models/bet');
+
 exports.getBets = (req, res, next) => {}
 
 exports.getBet = (req, res, next) => {}
 
 exports.createBet = async (req, res) => {
-    const { email, tipoAposta, valor, jogo_id } = req.body 
+    const { email, tipoAposta, resultado, valor, jogo_id } = req.body 
     const newBet = new Bet(
         email, 
         tipoAposta,
-        valor,
         resultado,
+        valor,
         jogo_id
     )
 
