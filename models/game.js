@@ -24,7 +24,7 @@ module.exports = class Game {
             JOIN "time" tA ON j.timea = tA.id 
             JOIN "time" tB ON j.timeb = tB.id
           WHERE 
-            j.id = $${id}
+            j.id = ${id}
         `)
         console.log(result)
       } catch (error) {
