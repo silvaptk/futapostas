@@ -1,4 +1,6 @@
-exports.getPlayers = (req, res, next) => {
+const Player = require('../models/player');
+
+exports.getPlayers = async (req, res, next) => {
     const allPlayers = await Player.get()
 
     res.status(200).json(allPlayers)
