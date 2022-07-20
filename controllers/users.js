@@ -22,7 +22,7 @@ exports.authUser = async (req, res) => {
   }
 
   return res.status(200).json({
-    token: jwt.sign(user, process.env.TOKEN_SECRET)
+    token: jwt.sign({ email, password, id: user.id }, process.env.TOKEN_SECRET)
   })
 }
 
@@ -67,7 +67,8 @@ exports.updateUser = async (req, res) => {
 
   if (result) {
     return res.status(200).json({
-      message: "O seu registro foi alterado com sucesso"
+      message: "O seu registro foi alterado com sucesso",
+      user
     })
   }
 
@@ -77,12 +78,25 @@ exports.updateUser = async (req, res) => {
 }
 
 exports.getUser = async (req, res) => {
+  let user 
+
+  try {
+    user = await User.get(req.user)
+  } catch (error) {
+    return res.status(400).send({
+      error: {
+        message: error.message 
+      }
+    })
+  }
+  
+
   res.status(200).send({
-    id: req.user.id,
-    name: req.user.name,
-    email: req.user.email,
-    profile_privacy: req.user.profilePrivacy,
-    personal_identifier: req.user.personalIdentifier,
-    wallet: req.user.wallet, 
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    profile_privacy: user.profilePrivacy,
+    personal_identifier: user.personalIdentifier,
+    wallet: user.wallet, 
   })
 }

@@ -8,7 +8,7 @@ const router = express.Router()
 router.post("/auth", controller.authUser)
 router.post("/", controller.createUser)
 router.use("/", authenticationMiddleware)
-router.get("/profile", controller.getUser)
+router.get("/", controller.getUser)
 router.put("/", controller.updateUser)
 
 module.exports = router 

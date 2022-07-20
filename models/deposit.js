@@ -1,17 +1,49 @@
-const { query } = require("../databases/postgres");
-const User = require("./user");
+const { query } = require("../databases/postgres")
+const User = require("./user")
 
 module.exports = class Deposit {
   constructor(value, userId) {
-    this.value = value;
-    this.userId = userId;
+    this.value = value
+    this.userId = userId
   }
 
-  async updateUserWallet() {
-    const userData = await query(`SELECT * FROM usuario u WHERE u.id=${this.userId}`);
-    const newValue = userData[0].carteira + this.value;
-    await query(`UPDATE Usuario SET carteira = ${newValue} WHERE id=${this.userId}`);
-    const newUserData = await query(`SELECT * FROM usuario u WHERE u.id=${this.userId}`);
-    return newUserData;
+  static async get ({ id, userId }) {
+    try {
+      let result 
+      if (id) {
+        result = await query(`SELECT * FROM deposito WHERE id = ${id}`)
+
+        return result[0]        
+      } else {
+        result = await query(`SELECT * FROM deposito WHERE usuario = ${userId}`)
+
+        return result 
+      }
+    } catch (error) {
+      console.log(error)
+
+      throw new Error("Não foi possível obter os depósitos")
+    }
+  }
+
+  async updateUserWallet () {
+    await query(`
+      INSERT INTO 
+        deposito (valor, usuario) 
+      VALUES 
+        (${this.value}, ${this.userId})
+    `)
+
+    await query(`
+      UPDATE Usuario 
+        SET carteira = carteira + ${this.value} 
+        WHERE id = ${this.userId}
+    `)
+
+    const newUserData = (await query(
+      `SELECT * FROM usuario u WHERE u.id = ${this.userId}`
+    ))[0]
+    
+    return newUserData
   }
 }

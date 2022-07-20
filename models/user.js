@@ -13,20 +13,46 @@ module.exports = class User {
     this.wallet = wallet;
   }
 
-  static async get ({ email, password }) {
-    const userPassword = await getFromRedis(email)
-    if (userPassword !== password) {
-      return false 
-    }
-
+  static async get ({ email, password, id }) {
     let user 
 
-    try {
-      const result = await postgresQuery(`SELECT * FROM usuario WHERE email = '${email}'`)
+    if (id) {
+      try {
+        const result = await postgresQuery(
+          `SELECT * FROM usuario WHERE id = '${id}'`
+        )
 
-      user = result[0]
-    } catch (error) {
-      console.log(error)
+        user = {
+          id: result[0].id,
+          name: result[0].name,
+          email: result[0].email,
+          personalIdentifier: result[0].cpf,
+          profilePrivacy: result[0].privacidade_do_perfil,
+          wallet: result[0].carteira
+        }
+      } catch (error) {
+        console.log(error)
+
+        throw new Error("Registro não encontrado no banco de dados relacional")
+      }
+    } else {
+      const storedPassword = await getFromRedis(email)
+
+      if (storedPassword !== password) {
+        throw new Error("E-mail ou senha incorretos")
+      }
+
+      try {
+        const result = await postgresQuery(
+          `SELECT * FROM usuario WHERE email = '${email}'`
+        )
+
+        user = result[0]
+      } catch (error) {
+        console.log(error)
+
+        throw new Error("Registro não encontrado no banco de dados relacional")
+      }
     }
 
     return user
