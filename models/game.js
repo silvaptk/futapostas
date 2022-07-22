@@ -5,22 +5,23 @@ const betTypes = require("./betTypes");
 const User = require("./user");
 
 module.exports = class Game {
-  constructor (local, dataHorario, timeA, timeB) {
-    this.local = local;
-    this.dataHorario = dataHorario;
-    this.timeA = timeA;
-    this.timeB = timeB;
+  constructor (place, date, homeTeam, awayTeam) {
+    this.place = place;
+    this.date = date;
+    this.homeTeam = homeTeam;
+    this.awayTeam = awayTeam;
   }
 
   static async get (id) {
     if (id) {
-      //
-      let gameSql 
+      let game  
 
       try {
-        gameSql = await postgres.query(`
+        const result = await postgres.query(`
           SELECT 
-            j.id AS "gameId", j.local AS "gamePlace", j.data_horario AS "gameDate",
+            j.id AS "id", 
+            j.local AS "place", 
+            j.data_horario AS "date",
             tA.id AS "homeTeamId", tA.nome AS "homeTeamName",
             tB.id AS "awayTeamId", tB.nome AS "awayTeamName"
           FROM jogo j 
@@ -29,37 +30,57 @@ module.exports = class Game {
           WHERE 
             j.id = ${id}
         `)
-        console.log(result)
+
+        game = {
+          id: result[0].id,
+          place: result[0].place,
+          date: result[0].date,
+          homeTeam: {
+            id: result[0].homeTeamId,
+            name: result[0].homeTeamName,
+          },
+          awayTeam: {
+            id: result[0].awayTeamId,
+            name: result[0].awayTeamName,
+          }
+        }
       } catch (error) {
         console.log(error)
       }
 
-      let gameMongo
+      const mongoConnection = await mongo.getConnection()
 
       try {
-        gameMongo = await mongoConnection.collection("Jogo").find({
-          "códigoJogo": id
+        const result = await mongoConnection.collection("Jogo").findOne({
+          "códigoJogo": Number(id)
         })
-      } catch(error) {
-        console.log(error)
-      }
 
-      return {
-        id: gameSql.gameId,
-        place: gameSql.gamePlace,
-        date: gameSql.gameDate,
-        home_team: {
-          id: gameSql.homeTeamId, 
-          name: gameSql.homeTeamName,
-          score: gameMongo.homeTeam
-        },
-        away_team: {
-          id: gameSql.awayTeamId, 
-          name: gameSql.awayTeamName,
-          score: gameMongo.awayTeam
+        if (result["Eventos"]) {
+          game.events = result["Eventos"].map(item => ({ 
+            type: item.tipo,
+            author: item.autor,
+            secondaryAuthor: item.autor2,
+            minute: item.minuto
+          }))
         }
-      }
-      //
+
+        if (result["Titulares"]) {
+          game.startingPlayers = {
+            homeTeam: result["Titulares"].timeA,
+            awayTeam: result["Titulares"].timeB,
+          }
+        }
+
+        if (result["EstatísticasJogo"]) {
+          game.statistics = {
+            bets: result["EstatísticasJogo"]["numeroDeApostas"]
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      } 
+
+      return game
     }
 
     let games 
@@ -74,8 +95,6 @@ module.exports = class Game {
           JOIN "time" tA ON j.timea = tA.id 
           JOIN "time" tB ON j.timeb = tB.id
       `)
-
-      console.log(result)
     } catch (error) {
       console.log(error)
     }
@@ -100,10 +119,10 @@ module.exports = class Game {
       await postgres.query(`
         INSERT INTO jogo(timea, timeb, data_horario, local, numero_de_resenhas)
         VALUES (
-          ${this.timeA},
-          ${this.timeB},
-          '${this.dataHorario}',
-          '${this.local}',
+          ${this.homeTeam},
+          ${this.awayTeam},
+          '${this.date}',
+          '${this.place}',
           0
         )
       `)
@@ -120,7 +139,7 @@ module.exports = class Game {
         FROM 
           jogo 
         WHERE 
-          data_horario = '${this.dataHorario}' AND local = '${this.local}'
+          data_horario = '${this.date}' AND local = '${this.place}'
       `)
 
       this.id = result[0].id
@@ -132,7 +151,7 @@ module.exports = class Game {
     
     try {
       await neo4j.run(`
-        CREATE (:Jogo { Id: ${this.id}, Data: "${this.dataHorario}" })
+        CREATE (:Jogo { Id: ${this.id}, Data: "${this.date}" })
       `)
     } catch (error) {
       console.log(error)
@@ -155,26 +174,68 @@ module.exports = class Game {
     return true
   }
 
-  static async finishGame(id, homeTeam, awayTeam) {
-    await this.addResults(id, homeTeam, awayTeam);
-    await this.calculatePrizes(id);
+  static async updateStartingPlayers (gameId, home, away) {
+    const mongoConnection = await mongo.getConnection()
+
+    try {
+      await mongoConnection.collection("Jogo").updateOne(
+        { "códigoJogo": Number(gameId) },
+        { $set: { "Titulares": { "timeA": home, "timeB": away } }}
+      )
+    } catch (error) {
+      console.log(error)
+
+      return false 
+    }
+
+    return true 
   }
 
-  static async addResults(id, homeTeam, awayTeam) {
-    const mongoConnection = await mongo.getConnection();
+  static async addEvent (gameId, event) {
+    const mongoConnection = await mongo.getConnection()
+
+    try {
+      await mongoConnection.collection("Jogo").updateOne(
+        { "códigoJogo": Number(gameId) },
+        { $push: { 
+            "Eventos": { 
+              tipo: event.type,
+              autor: event.author,
+              autor2: event.secondary_author,
+              minuto: event.minute,
+            } 
+          } 
+        }
+      )
+    } catch (error) {
+      console.log(error)
+
+      return false 
+    }
+
+    return true 
+  }
+
+  static async finishGame (id, homeTeam, awayTeam) {
+    await this.addResults(id, homeTeam, awayTeam)
+    await this.calculatePrizes(id)
+  }
+
+  static async addResults (id, homeTeam, awayTeam) {
+    const mongoConnection = await mongo.getConnection()
     await mongoConnection.collection("Jogo").updateOne({
-      'códigoJogo': Number(id)
+      "códigoJogo": Number(id)
     },
     {
       $set: {
         "homeTeam": Number(homeTeam),
         "awayTeam": Number(awayTeam)
       }
-    });
-    return await mongoConnection.collection("Jogo").find({'códigoJogo': Number(id)}).toArray()[0];
+    })
+    return await mongoConnection.collection("Jogo").find({'códigoJogo': Number(id)}).toArray()[0]
   }
 
-  static async getWinningTeam(id) {
+  static async getWinningTeam (id) {
     const collection = (await mongo.getConnection()).collection('Jogo');
     const gameResult = await collection.findOne({'códigoJogo': Number(id)});
     const jogoTeams = await postgres.query(`
@@ -192,7 +253,7 @@ module.exports = class Game {
     }
   }
 
-  static async calculatePrizes(id) {
+  static async calculatePrizes (id) {
     const promises = betTypes.map(async type => {
       const allBets = (await neo4j.run(`
         MATCH (a:Usuário)-[r:${type}]->(b:Jogo)

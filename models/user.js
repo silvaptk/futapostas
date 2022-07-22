@@ -13,23 +13,21 @@ module.exports = class User {
     this.wallet = wallet;
   }
 
-  static async get ({ email, password, id }) {
-    let user 
-
-    if (id) {
+  static async get ({ email, password, ids }) {
+    if (ids) {
       try {
         const result = await postgresQuery(
-          `SELECT * FROM usuario WHERE id = '${id}'`
+          `SELECT * FROM usuario WHERE id IN (${ids.join(", ")})`
         )
 
-        user = {
-          id: result[0].id,
-          name: result[0].name,
-          email: result[0].email,
-          personalIdentifier: result[0].cpf,
-          profilePrivacy: result[0].privacidade_do_perfil,
-          wallet: result[0].carteira
-        }
+        return result.map(item => ({
+          id: item.id,
+          name: item.nome,
+          email: item.email,
+          personalIdentifier: item.cpf,
+          profilePrivacy: item.privacidade_do_perfil,
+          wallet: item.carteira
+        }))
       } catch (error) {
         console.log(error)
 

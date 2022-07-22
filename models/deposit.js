@@ -1,5 +1,4 @@
 const { query } = require("../databases/postgres")
-const User = require("./user")
 
 module.exports = class Deposit {
   constructor(value, userId) {
@@ -13,11 +12,17 @@ module.exports = class Deposit {
       if (id) {
         result = await query(`SELECT * FROM deposito WHERE id = ${id}`)
 
-        return result[0]        
+        return {
+          id,
+          value: result[0].valor,
+        }        
       } else {
         result = await query(`SELECT * FROM deposito WHERE usuario = ${userId}`)
 
-        return result 
+        return result.map(item => ({
+          id: item.id, 
+          value: item.valor,
+        }))
       }
     } catch (error) {
       console.log(error)

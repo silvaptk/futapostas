@@ -81,7 +81,7 @@ exports.getUser = async (req, res) => {
   let user 
 
   try {
-    user = await User.get(req.user)
+    [user] = await User.get({ ids: [req.user.id] })
   } catch (error) {
     return res.status(400).send({
       error: {

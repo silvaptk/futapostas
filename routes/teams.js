@@ -7,7 +7,6 @@ const router = express.Router()
 router.get("/", controller.getTeams)
 router.get("/:id", controller.getTeam)
 router.post("/", controller.createTeam)
-router.put("/", controller.updateTeam)
-router.delete("/", controller.deleteTeam)
+router.put("/:id", controller.updateTeam)
 
 module.exports = router 

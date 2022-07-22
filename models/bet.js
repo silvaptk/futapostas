@@ -1,4 +1,3 @@
-const { query: postgresQuery } = require("../databases/postgres")
 const { run: runOnNeo4j } = require("../databases/neo4j");
 const User = require("./user");
 
@@ -11,7 +10,7 @@ module.exports = class Bet {
     this.jogo_id = jogo_id;
   }
 
-  async save() {
+  async save () {
     try {
       const wallet = await User.getWalletByEmail(this.email);
       if (wallet - this.valor < 0) {
@@ -39,20 +38,5 @@ module.exports = class Bet {
       console.log(error);
       return false
     }
-
-    // try {
-    //   const { userId } = (await postgresQuery(`SELECT u.id FROM usuario u WHERE u.email = \"${this.email}\"`))[0];
-    //   await postgresQuery(
-    //     `
-    //       INSERT INTO 
-    //         Apostas (tipo, valor, lucro_ou_perda, usuario, jogo, data)
-    //       VALUES
-    //         (\'${this.tipoAposta}\', \'${this.valor}\', NULL, NULL, ${userId}, ${this.jogo_id}, ${new Date()}) 
-    //     `
-    //   )
-    // } catch (error) {
-    //   console.log(error);
-    //   return false
-    // }
   }
 }

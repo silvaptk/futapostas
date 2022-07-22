@@ -1,4 +1,5 @@
 const Team = require("../models/team")
+const User = require("../models/user")
 
 exports.getTeams = async (req, res) => {
   let teams 
@@ -34,15 +35,33 @@ exports.getTeam = async (req, res) => {
     })
   }
 
+  if (team.lastReviews) {
+    const userIds = new Set(team.lastReviews.map(review => review.userId))
+
+    const users = await User.get({ ids: Array.from(userIds) })
+
+    team.lastReviews.forEach(review => {
+      const author = users.find(user => user.id === review.userId)
+      
+      review.user = {
+        id: author.id,
+        name: author.name
+      }
+
+      delete review.userId
+    })
+  }
+
   return res.status(200).send({
     id: team.id,
     name: team.name, 
     players: team.players,
-    statistics: {
+    statistics: team.statistics && {
       scored_goals: team.statistics.scoredGoals,
       played_matches: team.statistics.playedMatches,
       conceded_goals: team.statistics.concededGoals
-    }
+    },
+    last_reviews: team.lastReviews,
   })
 }
 
@@ -68,6 +87,19 @@ exports.createTeam = async (req, res) => {
   })
 }
 
-exports.updateTeam = (req, res, next) => {}
+exports.updateTeam = async (req, res) => {
+  const { id } = req.params 
+  const { name } = req.body 
 
-exports.deleteTeam = (req, res, next) => {}
+  const team = await Team.update(id, { name })
+
+  if (!team) {
+    res.status(500).send({
+      error: {
+        message: "Erro ao alterar o time"
+      }
+    })
+  }
+
+  return res.send(team)
+}
