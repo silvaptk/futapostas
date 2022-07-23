@@ -151,4 +151,21 @@ module.exports = class Player {
 
     return true
   }
+
+  static async offSide (id) {
+    const mongoConnection = await mongo.getConnection()
+
+    try {
+      await mongoConnection.collection("Jogador").updateOne(
+        { "códigoJogador": id },
+        { "EstatísticasJogador": { $inc: { "impedimentos": 1 } } }
+      )
+    } catch (error) {
+      console.log(error)
+
+      return false 
+    }
+
+    return true 
+  }
 }

@@ -13,17 +13,17 @@ const closeSession = (session) => {
 const run = async (query) => {
   const session = getSession()
 
-  const result = await session.run(query);
+  const result = await session.run(query)
 
   closeSession(session)
 
-  return result;
+  return result
 }
 
 const runWithCallback = async (callback) => {
   const session = getSession()
 
-  await callback(session.run)
+  await callback(session)
 
   closeSession(session)
 }

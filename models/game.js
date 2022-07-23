@@ -1,15 +1,17 @@
 const postgres = require("../databases/postgres")
 const neo4j = require("../databases/neo4j")
-const mongo = require("../databases/mongo");
-const betTypes = require("./betTypes");
-const User = require("./user");
+const mongo = require("../databases/mongo")
+const betTypes = require("./betTypes")
+const User = require("./user")
+const Player = require("./player")
+const Bet = require("./bet")
 
 module.exports = class Game {
   constructor (place, date, homeTeam, awayTeam) {
-    this.place = place;
-    this.date = date;
-    this.homeTeam = homeTeam;
-    this.awayTeam = awayTeam;
+    this.place = place
+    this.date = date
+    this.homeTeam = homeTeam
+    this.awayTeam = awayTeam
   }
 
   static async get (id) {
@@ -197,7 +199,8 @@ module.exports = class Game {
     try {
       await mongoConnection.collection("Jogo").updateOne(
         { "códigoJogo": Number(gameId) },
-        { $push: { 
+        { 
+          $push: { 
             "Eventos": { 
               tipo: event.type,
               autor: event.author,
@@ -213,85 +216,142 @@ module.exports = class Game {
       return false 
     }
 
+    switch (event.type) {
+      case "GOAL":
+        break
+      case "OWN-GOAL":
+        break 
+      case "OFF-SIDE":
+        await Player.offSide(event.author)
+        break
+      case "RED-CARD":
+        break
+      case "YELLOW-CARD":
+        break
+      default:
+        break
+    }
+
     return true 
   }
 
-  static async finishGame (id, homeTeam, awayTeam) {
-    await this.addResults(id, homeTeam, awayTeam)
-    await this.calculatePrizes(id)
-  }
+  static async finishGame (id) {
+    const winningTeam = await this.getWinningTeam(id)
 
-  static async addResults (id, homeTeam, awayTeam) {
-    const mongoConnection = await mongo.getConnection()
-    await mongoConnection.collection("Jogo").updateOne({
-      "códigoJogo": Number(id)
-    },
-    {
-      $set: {
-        "homeTeam": Number(homeTeam),
-        "awayTeam": Number(awayTeam)
-      }
-    })
-    return await mongoConnection.collection("Jogo").find({'códigoJogo': Number(id)}).toArray()[0]
-  }
-
-  static async getWinningTeam (id) {
-    const collection = (await mongo.getConnection()).collection('Jogo');
-    const gameResult = await collection.findOne({'códigoJogo': Number(id)});
-    const jogoTeams = await postgres.query(`
-    SELECT a.nome as homeTeam, b.nome as awayTeam FROM Jogo j
-    INNER JOIN Time a ON a.id = j.timeA
-    INNER JOIN Time b ON b.id = j.timeB
-    WHERE j.id = ${id}
-    `);
-    if (gameResult.homeTeam > gameResult.awayTeam) {
-      return jogoTeams[0].hometeam;
-    } else if (gameResult.homeTeam < gameResult.awayTeam) {
-      return jogoTeams[0].awayteam;
-    } else {
-      return 'EMPATE';
+    try {
+      neo4j.run(`
+        MATCH (g:Jogo { Id: ${id} })
+        SET g.Resultado = ${winningTeam}
+      `)
+    } catch (error) {
+      console.log(error)
     }
-  }
 
-  static async calculatePrizes (id) {
     const promises = betTypes.map(async type => {
       const allBets = (await neo4j.run(`
         MATCH (a:Usuário)-[r:${type}]->(b:Jogo)
         WHERE b.Id = ${id}
-        RETURN r.Resultado, r.Valor, a.email
+        RETURN r.Resultado, r.Valor, a.Email, r.Id
       `)).records.map(bet => ({
-        resultado: bet._fields[0],
-        valor: bet._fields[1].low,
-        email: bet._fields[2],
-      }));
-      const winningTeam = await this.getWinningTeam(id);
+        result: bet._fields[0],
+        value: bet._fields[1].low,
+        userEmail: bet._fields[2],
+        id: bet._fields[3].low
+      }))
       
-      const montantePerdedor = allBets.reduce(
-          (acc, bet) => 
-            bet.resultado !== winningTeam ? 
-            acc + bet.valor : acc,
-          0
-        )
+      const loserAmount = allBets.reduce(
+        (acc, bet) => 
+          bet.result !== winningTeam ? 
+          acc + bet.value : acc,
+        0
+      )
         
-      const montanteVencedor = allBets.reduce(
-          (acc, bet) => 
-            bet.resultado === winningTeam ?
-            acc + bet.valor : acc,
-          0
-        )
+      const winnerAmount = allBets.reduce(
+        (acc, bet) => 
+          bet.result === winningTeam ?
+          acc + bet.value : acc,
+        0
+      )
+
       const allPrizes = allBets.map(bet => {
-        if (bet.resultado === winningTeam) {
-          let montante;
-          if (montanteVencedor > 0) {
-            montante = bet.valor * (1 + montantePerdedor/montanteVencedor);
+        if (bet.result === winningTeam) {
+          let amount
+
+          if (winnerAmount > 0) {
+            amount = bet.value * (1 + loserAmount / winnerAmount)
           } else {
-            montante = bet.valor;
+            amount = bet.value
           }
-          return User.updateWalletByEmail(bet.email, montante);
+
+          return (async () => {
+            await Bet.setUserAmount(bet.id, amount)
+            await User.updateWalletByEmail(bet.userEmail, amount)
+          })()
         }
       })
+
       await Promise.all(allPrizes)
-    });
-    await Promise.all(promises);
+    })
+
+    await Promise.all(promises)
+  }
+
+  static async getWinningTeam (id) {
+    const mongoConnection = await mongo.getConnection()
+
+    let gameEvents
+
+    try {
+      const game = await mongoConnection.collection("Jogo").findOne({
+        "códigoJogo": Number(id) 
+      })
+
+      gameEvents = game["Eventos"].map(event => ({
+        type: event["tipo"],
+        author: event["autor"],
+      }))
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    const gameGoals = gameEvents.filter(
+      event => ["GOAL", "OWN-GOAL"].includes(event.type)
+    )
+
+    let players 
+
+    try {
+      players = await Player.get(
+        Array.from(new Set(gameGoals.map(goal => goal.author)))
+      )
+    } catch (error) {
+      throw new Error(error)
+    }
+
+    const result = {}
+
+    gameGoals.forEach(goal => {
+      const author = players.find(player => player.id === goal.author)
+
+      if (result[author.team.id]) {
+        result[author.team.id] += 1 
+      } else {
+        result[author.team.id] = 1
+      }
+    })
+
+    const [firstTeam, secondTeam] = Object.keys(result)
+
+    if (firstTeam && secondTeam) {
+      if (result[firstTeam] > result[secondTeam]) {
+        return firstTeam
+      } else if (result[firstTeam] < result[secondTeam]) {
+        return secondTeam
+      }
+    } else if (!secondTeam) {
+      return firstTeam 
+    }
+
+    return "TIE"
   }
 }

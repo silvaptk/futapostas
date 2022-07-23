@@ -36,6 +36,8 @@ module.exports = class User {
     } else {
       const storedPassword = await getFromRedis(email)
 
+      console.log(storedPassword)
+
       if (storedPassword !== password) {
         throw new Error("E-mail ou senha incorretos")
       }
@@ -45,15 +47,13 @@ module.exports = class User {
           `SELECT * FROM usuario WHERE email = '${email}'`
         )
 
-        user = result[0]
+        return result[0]
       } catch (error) {
         console.log(error)
 
         throw new Error("Registro não encontrado no banco de dados relacional")
       }
     }
-
-    return user
   }
 
   async save () {
@@ -95,7 +95,7 @@ module.exports = class User {
 
     try {
       await runOnNeo4j(
-        `CREATE (:Usuário { email: "${this.email}" })`
+        `CREATE (:Usuário { Email: "${this.email}" })`
       )
     } catch (error) {
       console.log(error)
