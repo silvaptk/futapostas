@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS Apostas (
   valor double precision NOT NULL,
   tipo varchar(256) NOT NULL,
   lucro_ou_perda varchar(256) NOT NULL,
+  montante_do_usuario double precision,
   usuario integer NOT NULL,
   jogo integer NOT NULL,
   "data" timestamp NOT NULL,
