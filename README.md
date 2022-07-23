@@ -1,6 +1,14 @@
 # API REST FutApostas
 
-## Introdução
+## **Autores**
+
+| **Nome**                      | **NUSP** |
+| -                             | -        |
+| Patrick Silva Souza           | 11228121 |
+| Francisco Eugênio Wernke      | 11221870 |
+| Daniel Angelo Esteves Lawand  | 10297693 |
+
+## **Introdução**
 
 API REST criada para gerenciar sistema de apostas. As entidades do sistema são 
 
@@ -12,7 +20,7 @@ API REST criada para gerenciar sistema de apostas. As entidades do sistema são
 
 A API deve permitir, principalmente, que o usuário realize apostas sobre o jogo e ganhe por isso. Ele também deve ser capaz de visualizar as apostas, bem como visualizar os jogos, os times, os jogadores e etc.
 
-## Executando
+## **Executando**
 
 Basta seguir o passo a passo a seguir:
 
@@ -24,7 +32,7 @@ Basta seguir o passo a passo a seguir:
 
 Feito isso, o servidor já irá aceitar requisições.
 
-## Estrutura de pastas
+## **Estrutura de pastas**
 
 ### **`app.js`**
 
